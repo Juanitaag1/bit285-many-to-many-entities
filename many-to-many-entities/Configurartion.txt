@@ -1,0 +1,68 @@
+﻿namespace many_to_many_entities.Migrations
+{
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+    using many_to_many_entities.Models;
+    using System.Collections.Generic;
+
+    internal sealed class Configuration : DbMigrationsConfiguration<many_to_many_entities.Models.CollegeDBContext>
+    {
+        public Configuration()
+        {
+            AutomaticMigrationsEnabled = true;
+        }
+
+        protected override void Seed(many_to_many_entities.Models.CollegeDBContext context)
+        {
+            //Students
+            context.Students.AddOrUpdate(s => s.ID,
+                   new Student() { ID = 1, Name = "Carson Alexander"},
+                   new Student() { ID = 2, Name = "Sylvan Bai" },
+                   new Student() { ID = 3, Name = "Parker Collins" },
+                   new Student() { ID = 4, Name = "Sahid Dhin" },
+                   new Student() { ID = 5, Name = "Nyge Fresnel" },
+                   new Student() { ID = 6, Name = "Meg Hansen" },
+                   new Student() { ID = 7, Name = "Castle Jorgeson" },
+                   new Student() { ID = 8, Name = "Fran Lavern" },
+                   new Student() { ID = 9, Name = "Yulia Mal" },
+                   new Student() { ID = 10, Name = "Bill Quander" },
+                   new Student() { ID = 11, Name = "Lanny Reet" }
+           );
+            context.SaveChanges();
+           
+            // Faculty
+            context.Faculty.AddOrUpdate(f => f.ID,
+                   new Faculty() { ID = 1, Name = "Gina Santo" },
+                   new Faculty() { ID = 2, Name = "Bran Allure" }
+            );
+            context.SaveChanges();
+
+            // Courses
+            context.Courses.AddOrUpdate(c => c.ID,
+                    new Course() { ID = 1, Designation = "BIT", Number = "285", Credits = "5", Faculty = context.Faculty.SingleOrDefault(f=>f.Name=="Gina Santo"), Students = new List<Student>() },
+                    new Course() { ID = 2, Designation = "BIT", Number = "280", Credits = "5", Faculty = context.Faculty.SingleOrDefault(f => f.Name == "Gina Santo"), Students = new List<Student>() },
+                    new Course() { ID = 3, Designation = "BIT", Number = "175", Credits = "5", Faculty = context.Faculty.SingleOrDefault(f => f.Name == "Bran Allure"), Students = new List<Student>() }
+            );
+            context.SaveChanges();
+
+            // Add Students to Courses
+            AddOrUpdateStudent(context, "BIT", "285", "Yulia Mal");
+            AddOrUpdateStudent(context, "BIT", "175", "Yulia Mal");
+            AddOrUpdateStudent(context, "BIT", "280", "Lanny Reet");
+            AddOrUpdateStudent(context, "BIT", "175", "Lanny Reet");
+            AddOrUpdateStudent(context, "BIT", "175", "Meg Hansen");
+            AddOrUpdateStudent(context, "BIT", "175", "Fran Lavern");
+            AddOrUpdateStudent(context, "BIT", "175", "Sahid Dhin");
+
+        }
+        void AddOrUpdateStudent (CollegeDBContext context, string courseDesignation, string courseNumber, string studentName)
+        {
+            var course = context.Courses.SingleOrDefault(c => c.Number == courseNumber && c.Designation== courseDesignation);
+            var student = course.Students.SingleOrDefault(i => i.Name == studentName);
+            if (student == null)
+                course.Students.Add(context.Students.Single(i => i.Name == studentName));
+        }
+    }
+}
