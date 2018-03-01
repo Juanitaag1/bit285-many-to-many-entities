@@ -9,7 +9,7 @@ namespace many_to_many_entities.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(many_to_many_entities.Models.CollegeDBContext context)
